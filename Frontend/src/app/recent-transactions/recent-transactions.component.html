@@ -1,0 +1,10 @@
+<mat-card>
+    <mat-card class="title-card">
+        <div class="mat-title">Recent Transactions</div>
+    </mat-card>
+    <mat-card-content>
+        <div *ngFor="let trans of recentTransactions ">
+            {{trans}}
+        </div>
+    </mat-card-content>
+</mat-card>

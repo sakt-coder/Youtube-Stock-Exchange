@@ -1,0 +1,10 @@
+<mat-card>
+    <mat-card class="title-card">
+        <div class="mat-title">Leaderboard</div>
+    </mat-card>
+    <mat-card-content>
+        <div *ngFor="let user of leaderBoard">
+            {{user.username}} - {{user.netWorth}}
+        </div>
+    </mat-card-content>
+</mat-card>

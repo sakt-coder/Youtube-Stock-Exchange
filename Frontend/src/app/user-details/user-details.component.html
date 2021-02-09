@@ -1,0 +1,16 @@
+<mat-card>
+    <mat-card class="title-card">
+        <div class="mat-title">User Details</div>
+    </mat-card>
+    <mat-card-content>
+        <div class="row">Username: {{user.username}}</div>
+        <div class="row">Available Cash: {{user.availCash}}</div>
+        <div class="row">
+            Holdings:
+            <div class="row" *ngFor="let holding of user.holdings">
+                Channel Name: {{holding.channelId}}
+                No of Shares: {{holding.noOfShares}}
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

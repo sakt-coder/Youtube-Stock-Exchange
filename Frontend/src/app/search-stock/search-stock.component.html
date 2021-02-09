@@ -1,0 +1,24 @@
+<mat-card>
+    <mat-card class="title-card">
+        <div class="mat-title">Search Channel</div>
+    </mat-card>
+    <mat-card-content>
+        <div class="row">
+            <mat-form-field appearance="standard">
+                <mat-label>Search</mat-label>
+                <input matInput [(ngModel)]="query" (keydown.enter)="search()">
+            </mat-form-field>
+        </div>
+        <div *ngFor="let result of results">
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{result.channelName}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                {{result.sharePrice}}
+                <button mat-raised-button color="primary" (click)="buy(result)">Buy</button>
+              </mat-expansion-panel>
+        </div>
+    </mat-card-content>
+</mat-card>

@@ -1,0 +1,20 @@
+<div class="whole">
+    <div class="mat-display-4 mb-1">Youtube Stock Exchange</div>
+    <div class="row">
+        <div class="col" [ngSwitch]="currUser">
+            <app-login-form (loginEvent)="login($event)" *ngSwitchCase="null"></app-login-form>
+            <app-user-details [user]="currUser" *ngSwitchDefault></app-user-details>
+        </div>
+        <div class="col">
+            <app-search-stock></app-search-stock>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <app-leaderboard [leaderBoard]="leaderBoard"></app-leaderboard>
+        </div>
+        <div class="col">
+            <app-recent-transactions [recentTransactions]="recentTransactions" ></app-recent-transactions>
+        </div>
+    </div>
+</div>

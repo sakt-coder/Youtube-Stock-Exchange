@@ -2,3 +2,21 @@
     margin-left: 25px;
     margin-right: 25px;
 }
+::ng-deep .mat-focused .mat-form-field-label {
+    color: #E4E6EB !important;
+   }
+   ::ng-deep .mat-form-field-label {
+    color: #E4E6EB !important;
+   }
+  
+   ::ng-deep .mat-form-field-underline {
+    background-color: #E4E6EB !important;
+  } 
+  
+  ::ng-deep.mat-form-field-ripple {
+   background-color: #E4E6EB !important;;
+  }
+  ::ng-deep input.mat-input-element {
+    color: #E4E6EB;
+    caret-color: white;
+  }

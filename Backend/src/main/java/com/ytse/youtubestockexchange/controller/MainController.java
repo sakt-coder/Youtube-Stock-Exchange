@@ -1,6 +1,8 @@
 package com.ytse.youtubestockexchange.controller;
 
 import com.ytse.youtubestockexchange.service.AuthService;
+import com.ytse.youtubestockexchange.service.GAPIService;
+import com.ytse.youtubestockexchange.service.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,10 @@ public class MainController {
 
     @Autowired
     AuthService authService;
+    @Autowired
+    GAPIService gapiService;
+    @Autowired
+    UserService userService;
 
     Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -36,7 +42,7 @@ public class MainController {
     @GetMapping("/fetchLeaderBoard")
     public ResponseEntity<?> fetchLeaderBoard() {
         logger.info("Fetching LeaderBoard");
-        return null;
+        return userService.fetchLeaderBoard();
     }
 
     @GetMapping("/fetchRecentTransactions")
@@ -48,12 +54,12 @@ public class MainController {
     @PostMapping("/buyShare")
     public ResponseEntity<?> buyShare(@RequestParam("channelId") String channelId) {
         logger.info(authService.currUser.username+" buying share of "+channelId);
-        return null;
+        return userService.buyShare(channelId);
     }
 
     @GetMapping("/searchChannel")
     public ResponseEntity<?> search(@RequestParam("query") String query) {
         logger.info(authService.currUser.username+" searching for "+query);
-        return null;
+        return gapiService.search(query);
     }
 }

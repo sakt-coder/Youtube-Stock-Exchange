@@ -16,9 +16,13 @@
                     {{result.channelName}}
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                {{result.sharePrice}}
-                <button mat-raised-button color="primary" (click)="buy(result)">Buy</button>
-              </mat-expansion-panel>
+                <div class="row">
+                    <div class="col-10">Price per share : ${{result.sharePrice}}</div>
+                    <div class="col-2">
+                        <button mat-raised-button color="primary" (click)="buy(result)">Buy</button>
+                    </div>
+                </div>
+            </mat-expansion-panel>
         </div>
     </mat-card-content>
 </mat-card>

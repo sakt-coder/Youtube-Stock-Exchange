@@ -16,6 +16,7 @@ import { SearchStockComponent } from './search-stock/search-stock.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { RecentTransactionsComponent } from './recent-transactions/recent-transactions.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { UserDetailsComponent } from './user-details/user-details.component';
     MatIconModule,
     MatButtonModule,
     MatCardModule,
+    MatExpansionModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},

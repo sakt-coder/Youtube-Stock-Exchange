@@ -46,6 +46,7 @@ export class AppComponent implements OnInit{
     this.http.get(`${environment.url}/fetchLeaderBoard`)
       .subscribe(
         (data: User[]) => {
+          console.log(data);
             this.leaderBoard = data;
          }
       );

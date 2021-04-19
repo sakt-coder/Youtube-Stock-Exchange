@@ -28,9 +28,7 @@ export class SearchStockComponent implements OnInit {
   }
 
   buy(channel: Channel) {
-    let body = new HttpParams();
-    body = body.set('channelId', channel.channelId);
-    this.http.post('http://localhost:8080/buyShare',body)
+    this.http.post('http://localhost:8080/buyShare',channel)
       .subscribe(
         (data) => {
             console.log(data);

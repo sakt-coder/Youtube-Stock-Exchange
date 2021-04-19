@@ -10,7 +10,7 @@ public class LFUCache<K, V> {
     HashMap<K, Integer> countMap;
     HashMap<Integer, LinkedHashSet<K>> listMap;
 
-    LFUCache(int CACHE_SIZE) {
+    public LFUCache(int CACHE_SIZE) {
         this.CACHE_SIZE = CACHE_SIZE;
         this.size = 0;
         this.minFreq = 0;
@@ -20,13 +20,13 @@ public class LFUCache<K, V> {
         listMap.put(1, new LinkedHashSet<K>());
     }
 
-    boolean contains(K key) {
+    public boolean contains(K key) {
         if(valueMap.containsKey(key))
             return true;
         return false;
     }
 
-    V get(K key) {
+    public V get(K key) {
         if(!contains(key))
             return null;
         
@@ -43,7 +43,7 @@ public class LFUCache<K, V> {
         return valueMap.get(key);
     }
 
-    void put(K key, V value) {
+    public void put(K key, V value) {
         if(contains(key)) {
             valueMap.put(key, value);
             get(key);

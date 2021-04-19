@@ -1,6 +1,5 @@
 package com.ytse.youtubestockexchange.utilities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +33,21 @@ public class SyncTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        logger.info("Database syncing");
-
         List<Channel> channelList = channelRepository.findAll();
-        logger.info(channelList.toString());
-        List<String> queryList = new ArrayList<>();
         for(Channel channel: channelList)
-            queryList.add(channel.channelId);
-        List<Long> prices = gapiService.getPrices(queryList);
-        if(prices != null) {
-            logger.info(prices.toString());
-            for(int i=0;i<channelList.size();i++)
-                channelList.get(i).sharePrice = prices.get(i);
-            channelRepository.saveAll(channelList);
-        }
+            gapiService.setPrice(channel);
+        for(Channel channel: channelList)
+		{
+			synchronized(channel) {
+			while(channel.sharePrice == 0)
+                try {
+				    channel.wait();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+			}
+		}
+        channelRepository.saveAll(channelList);
 
         Map<String, Long> priceMap = new HashMap<>();
         for(Channel channel: channelList)
@@ -61,7 +61,6 @@ public class SyncTimerTask extends TimerTask {
                 netWorth += user.holdings.get(channelId) * priceMap.getOrDefault(channelId, 0l);
             user.netWorth = netWorth;
         }
-        logger.info(userList.toString());
         userRepository.saveAll(userList);
 
         for(User user: userList)

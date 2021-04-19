@@ -8,6 +8,7 @@ import com.ytse.youtubestockexchange.repository.UserRepository;
 import com.ytse.youtubestockexchange.service.AuthService;
 import com.ytse.youtubestockexchange.service.GAPIService;
 import com.ytse.youtubestockexchange.service.UserService;
+import com.ytse.youtubestockexchange.utilities.BufferTimerTask;
 import com.ytse.youtubestockexchange.utilities.SyncTimerTask;
 
 import org.slf4j.Logger;
@@ -17,10 +18,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import static com.ytse.youtubestockexchange.constants.YtseConstants.SYNC_REFRESH_RATE;
+import static com.ytse.youtubestockexchange.constants.YtseConstants.BUFF_REFRESH_RATE;
+
 @SpringBootApplication
 public class YoutubeStockExchangeApplication implements CommandLineRunner{
 
-	private static final long REFRESH_RATE = 10000L;
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
@@ -32,7 +35,9 @@ public class YoutubeStockExchangeApplication implements CommandLineRunner{
 	@Autowired
 	ChannelRepository channelRepository;
 	@Autowired
-	SyncTimerTask task;
+	SyncTimerTask syncTask;
+	@Autowired
+	BufferTimerTask buffTask;
 
 	Logger logger = LoggerFactory.getLogger(YoutubeStockExchangeApplication.class);
 	public static void main(String[] args) {
@@ -40,7 +45,9 @@ public class YoutubeStockExchangeApplication implements CommandLineRunner{
 	}
 	@Override
 	public void run(String... args) throws Exception {
-		Timer timer = new Timer("Sync Timer");
-		timer.scheduleAtFixedRate(task, new Date(), REFRESH_RATE);
+		Timer timer = new Timer("YTSE Timer");
+		Timer timer2 = new Timer("YTSE Timer 2");
+		timer2.scheduleAtFixedRate(buffTask, new Date(), BUFF_REFRESH_RATE);
+		timer.scheduleAtFixedRate(syncTask, new Date(), SYNC_REFRESH_RATE);
 	}
 }

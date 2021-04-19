@@ -27,10 +27,24 @@ export class AppComponent implements OnInit{
   refresh() {
     this.fetchRecentTransactions();
     this.fetchLeaderBoard();
+    this.autoLogin();
   }
 
   login(user: User): void {
     this.currUser = user;
+  }
+
+  logout(): void {
+    this.currUser = null;
+  }
+
+  autoLogin() {
+    this.http.get(`${environment.url}/autoLogin`)
+      .subscribe(
+        (data:User) => { 
+          this.login(data);
+         }
+      );
   }
 
   fetchRecentTransactions() {

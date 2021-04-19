@@ -39,6 +39,8 @@ public class RequestFilter extends OncePerRequestFilter {
         if (user != null)
             authService.currUser = user;
 
+        logger.info(token+" "+user);
+
         filterChain.doFilter(request, response);
     }
 

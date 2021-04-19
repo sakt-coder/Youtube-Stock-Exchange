@@ -3,8 +3,30 @@
         <div class="mat-title">Leaderboard</div>
     </mat-card>
     <mat-card-content>
-        <div *ngFor="let user of leaderBoard">
-            {{user.username}} - {{user.netWorth}}
+        <div class="row">
+            <div class="col-2">Rank</div>
+            <div class="col">User</div>
+            <div class="col">Net Worth</div>
+        </div>
+        <hr/>
+        <div *ngFor="let user of leaderBoard | keyvalue">
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <div class="row">
+                        <div class="col-2">{{parseInt(user.key) + 1}}</div>
+                        <div class="col-8">{{user.value.username}}</div>
+                        <div class="col-2">{{user.value.netWorth}} Ɖ</div>
+                    </div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                Holds stocks in 
+                <ul>
+                    <li *ngFor="let holding of user.value.holdings">
+                        {{holding.first.channelName}}
+                    </li>
+                </ul>
+            </mat-expansion-panel>
         </div>
     </mat-card-content>
 </mat-card>

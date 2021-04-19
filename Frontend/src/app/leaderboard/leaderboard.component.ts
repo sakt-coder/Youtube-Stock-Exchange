@@ -15,4 +15,8 @@ export class LeaderboardComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  parseInt(num: string) {
+    return parseInt(num);
+  }
+
 }

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ytse.youtubestockexchange.models.Channel;
+import com.ytse.youtubestockexchange.utilities.LFUCache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +25,44 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static com.ytse.youtubestockexchange.constants.YtseConstants.API_KEY;
 import static com.ytse.youtubestockexchange.constants.YtseConstants.API_URL;
+import static com.ytse.youtubestockexchange.constants.YtseConstants.CACHE_SIZE;;
 
 @Service
 public class GAPIService {
 
-    Queue<Channel> buffer = new LinkedList<Channel>();
-
+    public LFUCache<String, Long> cache = new LFUCache<String, Long>(CACHE_SIZE);
+    public Queue<Channel> buffer = new LinkedList<Channel>();
     Logger logger = LoggerFactory.getLogger(GAPIService.class);
 
-    public ResponseEntity<?> search(String query) {
+    public void setPrice(Channel channel) {
+        if(cache.contains(channel.channelId)) {
+            channel.sharePrice = cache.get(channel.channelId);
+            synchronized(channel) {
+                channel.notify();
+            }
+        }
+        else {
+            channel.sharePrice = 0;
+            buffer.add(channel);
+        }
+    }
+
+    public ResponseEntity<?> search(String rawQuery) {
         List<Channel> results = new ArrayList<>();
         JsonNode rootNode;
+
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<rawQuery.length();i++)
+            if(rawQuery.charAt(i)==' ')
+                sb.append("%20");
+            else
+                sb.append(rawQuery.charAt(i));
+        String query = sb.toString();
+
+        logger.info(String.format(
+            "%s/search?part=snippet&q=%s&type=channel&key=%s",
+                API_URL, query, API_KEY
+        ));
         try {
             rootNode = HTTPGet(String.format(
                 "%s/search?part=snippet&q=%s&type=channel&key=%s",
@@ -52,12 +80,20 @@ public class GAPIService {
             results.add(new Channel(item.get("title").asText(), item.get("channelId").asText()));
         }
 
-        List<String> queryList = new ArrayList<String>();
         for(Channel channel: results)
-            queryList.add(channel.channelId);
-        List<Long> priceList = getPrices(queryList);
-        for(int i=0;i<results.size();i++)
-            results.get(i).sharePrice = priceList.get(i);
+            setPrice(channel);
+        for(Channel channel: results)
+        {
+            synchronized(channel) {
+            while(channel.sharePrice == 0)
+                try {
+                    channel.wait();
+                } catch(Exception e) {
+
+                }
+            }
+            logger.info(channel.toString());
+        }
             
         return ResponseEntity.ok().body(results);
     }
@@ -89,7 +125,7 @@ public class GAPIService {
             JsonNode item = rootNode.get("items").get(i).get("statistics");
             long viewCount = item.get("viewCount").asLong();
             long videoCount = item.get("videoCount").asLong();
-            retList.add(viewCount/videoCount);
+            retList.add(videoCount==0?-1:viewCount/videoCount);
         }
         return retList;
     }

@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    UserService userService;
+    @Autowired
+    AuthService authService;
 
     private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
@@ -37,7 +41,23 @@ public class AuthService {
         headers.set("Token", user.token);
         headers.set("Access-Control-Expose-Headers", "Token");
 
-        return ResponseEntity.ok().headers(headers).body(user);
+        return ResponseEntity.ok().headers(headers).body(userService.export(user));
+    }
+
+    public ResponseEntity<?> autoLogin() {
+        
+        if(authService.currUser == null)
+            return ResponseEntity.status(401).body(null);
+
+        return ResponseEntity.ok().body(userService.export(authService.currUser));
+    }
+
+    public ResponseEntity<?> logout() {
+        
+        authService.currUser.token = null;
+        userRepository.save(authService.currUser);
+        authService.currUser = null;
+        return ResponseEntity.ok().body(true);
     }
 
     public ResponseEntity<?> register(String username, String password) {
@@ -50,7 +70,7 @@ public class AuthService {
         headers.set("Token", token);
         headers.set("Access-Control-Expose-Headers", "Token");
         
-        return ResponseEntity.ok().headers(headers).body(newUser);
+        return ResponseEntity.ok().headers(headers).body(userService.export(newUser));
     }
     
     public String generateNewToken() {

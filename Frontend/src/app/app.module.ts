@@ -17,6 +17,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { RecentTransactionsComponent } from './recent-transactions/recent-transactions.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDividerModule} from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatButtonModule,
     MatCardModule,
     MatExpansionModule,
+    MatDividerModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},

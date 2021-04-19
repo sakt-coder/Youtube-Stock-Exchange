@@ -1,13 +1,16 @@
 package com.ytse.youtubestockexchange.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.ytse.youtubestockexchange.models.Channel;
+import com.ytse.youtubestockexchange.models.Pair;
 import com.ytse.youtubestockexchange.models.User;
 import com.ytse.youtubestockexchange.repository.ChannelRepository;
 import com.ytse.youtubestockexchange.repository.UserRepository;
@@ -42,26 +45,34 @@ public class UserService {
 
     public ResponseEntity<?> fetchLeaderBoard() {
         Iterator<User> it = userSet.iterator();
-        User ret[] = new User[Math.min(LB_SIZE, userSet.size())];
+        List<Map<String, Object>> list = new ArrayList<>();
         int cnt = 0;
-        while(it.hasNext() && cnt<LB_SIZE) {
-            ret[cnt] = it.next();
-            cnt++;
-        }
-        return ResponseEntity.ok().body(ret);
+        while(it.hasNext() && cnt++<LB_SIZE)
+            list.add(export(it.next()));
+        return ResponseEntity.ok().body(list);
     }
 
-    public ResponseEntity<?> buyShare(String channelId) {
-        logger.info(authService.currUser.username+" buys share of "+channelId);
-        Optional<Channel> op = channelRepository.findById(channelId);
+    public ResponseEntity<?> fetchRecentTransactions() {
+        return ResponseEntity.ok().body(null);
+    }
+
+    public ResponseEntity<?> buyShare(Channel channel) {
+        logger.info(authService.currUser.username+" buys share of "+channel);
+        Optional<Channel> op = channelRepository.findById(channel.channelId);
         long price = 0;
         if(op.isPresent()) {
             price = op.get().sharePrice;
         }
         else {
-            price = gapiService.getPrices(new ArrayList<>(){{
-                add(channelId);
-            }}).get(0);
+            gapiService.setPrice(channel);
+            while(channel.sharePrice == 0) {
+                try {
+                    channel.wait();
+                } catch(Exception e) {
+
+                }
+            }
+            price = channel.sharePrice;
         }
         logger.info("price is "+price);
         User user = authService.currUser;
@@ -69,10 +80,22 @@ public class UserService {
         if(user.availCash < price)
             return ResponseEntity.status(500).body(Map.of("Message", "Insufficient Cash available"));
         user.availCash -= price;
-        user.addHolding(channelId);
+        user.addHolding(channel.channelId);
         userRepository.save(user);
-        if(!channelRepository.findById(channelId).isPresent())
-            channelRepository.save(new Channel("unknown", channelId));
+        if(!channelRepository.findById(channel.channelId).isPresent())
+            channelRepository.save(channel);
         return ResponseEntity.ok().body(true);
+    }
+
+    public Map<String, Object> export(User user) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("username", user.username);
+        map.put("availCash", user.availCash);
+        map.put("netWorth", user.netWorth);
+        List<Pair<Channel, Integer>> holdings = new ArrayList<>();
+        for(String channelId: user.holdings.keySet())
+            holdings.add(new Pair<Channel, Integer>(channelRepository.findById(channelId).get(), user.holdings.get(channelId)));
+        map.put("holdings", holdings);
+        return map;
     }
 }

@@ -1,5 +1,6 @@
 package com.ytse.youtubestockexchange.controller;
 
+import com.ytse.youtubestockexchange.models.Channel;
 import com.ytse.youtubestockexchange.service.AuthService;
 import com.ytse.youtubestockexchange.service.GAPIService;
 import com.ytse.youtubestockexchange.service.UserService;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,6 +35,18 @@ public class MainController {
         return authService.login(username, password);
     }
 
+    @GetMapping("/autoLogin")
+    public ResponseEntity<?> autoLogin() {
+        logger.info("AutoLogin");
+        return authService.autoLogin();
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout() {
+        logger.info("logging out" + authService.currUser==null?"null":authService.currUser.username);
+        return authService.logout();
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestParam("username") String username, @RequestParam("password") String password) {
         logger.info("Registering with username = "+username+", password = "+password);
@@ -48,13 +62,13 @@ public class MainController {
     @GetMapping("/fetchRecentTransactions")
     public ResponseEntity<?> fetchRecentTransactions() {
         logger.info("Fetching Recent Transactions");
-        return null;
+        return userService.fetchRecentTransactions();
     }
 
     @PostMapping("/buyShare")
-    public ResponseEntity<?> buyShare(@RequestParam("channelId") String channelId) {
-        logger.info(authService.currUser.username+" buying share of "+channelId);
-        return userService.buyShare(channelId);
+    public ResponseEntity<?> buyShare(@RequestBody Channel channel) {
+        logger.info(authService.currUser.username+" buying share of "+channel);
+        return userService.buyShare(channel);
     }
 
     @GetMapping("/searchChannel")

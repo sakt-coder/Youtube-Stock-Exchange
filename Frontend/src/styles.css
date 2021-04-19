@@ -25,6 +25,9 @@ body {
 .mat-expansion-panel-header-title {
     color: #E4E6EB;
   }
+  .mat-expansion-panel-header-description {
+    color: #E4E6EB;
+  }
 .mat-expansion-panel{
     background-color: #22303C;
     color: #E4E6EB;
@@ -40,4 +43,7 @@ body {
 .mat-form-field{
     width: 100%;
     font-size: large;
+}
+.mat-icon {
+    font-size: 48px;
 }

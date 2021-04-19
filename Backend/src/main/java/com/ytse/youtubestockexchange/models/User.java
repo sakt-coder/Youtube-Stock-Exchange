@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import static com.ytse.youtubestockexchange.constants.YtseConstants.OPENING_BALANCE;
 
 import org.springframework.data.annotation.Id;
@@ -15,7 +16,6 @@ public class User {
     public String username;
     @JsonIgnore
     public String password;
-    @JsonIgnore
     public String token;
     public Map<String, Integer> holdings;
     public long availCash;

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { User } from '../models/user';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login-form',
@@ -24,7 +25,7 @@ export class LoginFormComponent implements OnInit {
     let body = new HttpParams();
     body = body.set('username', this.username);
     body = body.set('password', this.password);
-    this.http.post('http://localhost:8080/login',body)
+    this.http.post(`${environment.url}/login`,body)
       .subscribe(
         (data:User) => { 
           this.loginEvent.emit(data);
@@ -36,18 +37,11 @@ export class LoginFormComponent implements OnInit {
     let body = new HttpParams();
     body = body.set('username', this.username);
     body = body.set('password', this.password);
-    this.http.post('http://localhost:8080/register',body)
+    this.http.post(`${environment.url}/register`,body)
       .subscribe(
         (data:User) => { 
           this.loginEvent.emit(data);
          }
-      );
-  }
-
-  check(){
-    this.http.get('http://localhost:8080/who')
-      .subscribe(
-        (data) => { console.log(data); }
       );
   }
 
